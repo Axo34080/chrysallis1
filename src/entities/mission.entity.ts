@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   OneToMany,
   CreateDateColumn,
@@ -15,12 +15,12 @@ import { FieldReport } from './field-report.entity';
  */
 @Entity('missions')
 export class Mission {
-  // Identifiant unique généré automatiquement (UUID)
-  @PrimaryGeneratedColumn('uuid')
+  // Identifiant unique (compatible avec les IDs personnalisés du front-end)
+  @PrimaryColumn({ length: 100 })
   id: string;
 
   // Nom de code de la mission (ex: "Opération Phénix")
-  @Column({ length: 200 })
+  @Column({ length: 200, nullable: true })
   codeName: string;
 
   // Description détaillée de la mission
@@ -40,20 +40,20 @@ export class Mission {
   endDate: Date;
 
   // Statut actuel de la mission
-  // assigned: assignée, in_progress: en cours, completed: terminée, compromised: compromise
+  // ASSIGNED: assignée, IN_PROGRESS: en cours, COMPLETED: terminée, COMPROMISED: compromise
   @Column({
     type: 'enum',
-    enum: ['assigned', 'in_progress', 'completed', 'compromised'],
-    default: 'assigned',
+    enum: ['ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'COMPROMISED'],
+    default: 'ASSIGNED',
   })
   status: string;
 
   // Niveau de classification de la mission
-  // top_secret: top secret, secret: secret, confidential: confidentiel
+  // TOP_SECRET: top secret, SECRET: secret, CONFIDENTIAL: confidentiel
   @Column({
     type: 'enum',
-    enum: ['top_secret', 'secret', 'confidential'],
-    default: 'confidential',
+    enum: ['TOP_SECRET', 'SECRET', 'CONFIDENTIAL'],
+    default: 'CONFIDENTIAL',
   })
   classificationLevel: string;
 
