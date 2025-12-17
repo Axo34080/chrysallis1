@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Mission } from '../entities/mission.entity';
@@ -11,6 +11,8 @@ import { UpdateMissionDto } from './dto/update-mission.dto';
  */
 @Injectable()
 export class MissionService {
+  private readonly logger = new Logger(MissionService.name);
+
   constructor(
     // Injection du repository TypeORM pour accéder à la base de données
     @InjectRepository(Mission)
@@ -32,10 +34,13 @@ export class MissionService {
    * Inclut les relations avec les étapes et les rapports
    * @returns Liste de toutes les missions
    */
-  findAll() {
-    return this.missionRepository.find({
-      relations: ['steps', 'reports'],
+  async findAll() {
+    this.logger.log('Fetching all missions');
+    const missions = await this.missionRepository.find({
+      relations: ['steps'],
     });
+    this.logger.debug(`Found ${missions.length} missions`);
+    return missions;
   }
 
   /**
@@ -44,11 +49,17 @@ export class MissionService {
    * @param id - Identifiant unique de la mission
    * @returns La mission trouvée ou null
    */
-  findOne(id: string) {
-    return this.missionRepository.findOne({
-      where: { id },
-      relations: ['steps', 'reports'],
+  async findOne(id: number) {
+    this.logger.log(`Fetching mission with id: ${id}`);
+    const mission = await this.missionRepository.findOne({
+      where: { id: id.toString() },
+      relations: ['steps'],
     });
+    if (!mission) {
+      this.logger.warn(`Mission with id ${id} not found`);
+      throw new NotFoundException(`Mission with ID ${id} not found`);
+    }
+    return mission;
   }
 
   /**
@@ -57,7 +68,7 @@ export class MissionService {
    * @param updateMissionDto - Nouvelles données de la mission
    * @returns La mission mise à jour
    */
-  async update(id: string, updateMissionDto: UpdateMissionDto) {
+  async update(id: number, updateMissionDto: UpdateMissionDto) {
     await this.missionRepository.update(id, updateMissionDto);
     return this.findOne(id);
   }
@@ -68,7 +79,7 @@ export class MissionService {
    * @param id - Identifiant de la mission à supprimer
    * @returns Confirmation de suppression
    */
-  async remove(id: string) {
+  async remove(id: number) {
     await this.missionRepository.delete(id);
     return { deleted: true };
   }

@@ -10,6 +10,7 @@ import { FieldReport } from './entities/field-report.entity';
 import { MissionModule } from './mission/mission.module';
 import { StepsModule } from './steps/steps.module';
 import { FieldReportsModule } from './field-reports/field-reports.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { FieldReportsModule } from './field-reports/field-reports.module';
     MissionModule,
     StepsModule,
     FieldReportsModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

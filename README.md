@@ -96,3 +96,37 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+## Docker
+
+Instructions to build and run the application with Docker and Docker Compose.
+
+1. Copier l'exemple d'environnement et ajuster si nécessaire:
+
+```powershell
+Copy-Item .env.example .env
+# Éditez .env si nécessaire (POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, PORT)
+```
+
+2. Construire et démarrer les conteneurs (Postgres + app):
+
+```powershell
+docker-compose up -d --build
+```
+
+3. Voir les logs de l'application:
+
+```powershell
+docker-compose logs -f app
+```
+
+4. Pour arrêter et supprimer les conteneurs/volumes:
+
+```powershell
+docker-compose down -v
+```
+
+Notes:
+- Le service `db` expose Postgres sur le port 5432 (mappé sur la machine hôte).
+- Le service `app` écoute sur le port défini dans `PORT` (par défaut 3000).
+- En production, pensez à désactiver `synchronize` dans la configuration TypeORM et à utiliser des migrations.

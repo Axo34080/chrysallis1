@@ -56,7 +56,7 @@ export class MissionController {
    */
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.missionService.findOne(id);
+    return this.missionService.findOne(+id);
   }
 
   /**
@@ -65,7 +65,7 @@ export class MissionController {
    */
   @Put(':id')
   update(@Param('id') id: string, @Body() updateMissionDto: UpdateMissionDto) {
-    return this.missionService.update(id, updateMissionDto);
+    return this.missionService.update(+id, updateMissionDto);
   }
 
   // ====== STEPS (Étapes de mission) ======
@@ -89,8 +89,9 @@ export class MissionController {
     @Body() createStepDto: CreateStepDto,
   ) {
     // Récupère d'abord la mission pour l'associer à l'étape
-    const mission = await this.missionService.findOne(id);
-    return this.stepsService.create({ ...createStepDto, mission } as any);
+    const mission = await this.missionService.findOne(+id);
+    const stepWithMission = Object.assign({}, createStepDto, { mission });
+    return this.stepsService.create(stepWithMission);
   }
 
   /**
@@ -135,11 +136,9 @@ export class MissionController {
     @Body() createReportDto: CreateFieldReportDto,
   ) {
     // Récupère d'abord la mission pour l'associer au rapport
-    const mission = await this.missionService.findOne(id);
-    return this.fieldReportsService.create({
-      ...createReportDto,
-      mission,
-    } as any);
+    const mission = await this.missionService.findOne(+id);
+    const reportWithMission = Object.assign({}, createReportDto, { mission });
+    return this.fieldReportsService.create(reportWithMission);
   }
 
   /**
