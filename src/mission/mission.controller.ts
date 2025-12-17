@@ -47,7 +47,8 @@ export class MissionController {
    */
   @Post()
   create(@Body() createMissionDto: CreateMissionDto) {
-    return this.missionService.create(createMissionDto);
+    console.log('Creating mission with data:', createMissionDto);
+    //return this.missionService.create(createMissionDto);
   }
 
   /**

@@ -11,9 +11,12 @@ import { MissionModule } from './mission/mission.module';
 import { StepsModule } from './steps/steps.module';
 import { FieldReportsModule } from './field-reports/field-reports.module';
 import { HealthModule } from './health/health.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DATABASE_HOST || 'localhost',
@@ -28,6 +31,7 @@ import { HealthModule } from './health/health.module';
     StepsModule,
     FieldReportsModule,
     HealthModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
