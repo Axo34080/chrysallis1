@@ -16,7 +16,7 @@ import { FieldReport } from './field-report.entity';
 @Entity('missions')
 export class Mission {
   // Identifiant unique (compatible avec les IDs personnalisés du front-end)
-  @PrimaryGeneratedColumn({})
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   // Nom de code de la mission (ex: "Opération Phénix")
