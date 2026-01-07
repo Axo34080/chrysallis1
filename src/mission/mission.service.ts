@@ -30,13 +30,12 @@ export class MissionService {
       createMissionDto.id = `mission-${Date.now()}`;
     }
 
-    console.log('Creating mission with data:', createMissionDto); // DEBUG
+    this.logger.debug('Creating mission with data:', createMissionDto);
 
     const mission = this.missionRepository.create(createMissionDto);
-    console.log('Mission entity created:', mission); // DEBUG
+    this.logger.debug('Mission entity created:', mission);
 
     const savedMission = await this.missionRepository.save(mission);
-    console.log('Mission saved:', savedMission); // DEBUG
 
     // Envoyer une notification WebSocket
     const notification: MissionNotificationDto = {
@@ -47,33 +46,21 @@ export class MissionService {
       timestamp: new Date(),
     };
 
-    if (savedMission.agentId) {
-      this.chatGateway.sendMissionNotification(notification);
-    } else {
-      this.chatGateway.broadcastMissionNotification(notification);
-    }
-
-    this.logger.log(`Mission ${savedMission.id} created and notification sent`);
+    this.sendNotification(notification);
+    this.logger.log(`Mission ${savedMission.id} created`);
     return savedMission;
   }
 
   async findAll() {
-    this.logger.log('Fetching all missions');
-    const missions = await this.missionRepository.find({
-      relations: ['steps'],
-    });
-    this.logger.debug(`Found ${missions.length} missions`);
-    return missions;
+    return this.missionRepository.find({ relations: ['steps'] });
   }
 
   async findOne(id: string) {
-    this.logger.log(`Fetching mission with id: ${id}`);
     const mission = await this.missionRepository.findOne({
       where: { id },
       relations: ['steps'],
     });
     if (!mission) {
-      this.logger.warn(`Mission with id ${id} not found`);
       throw new NotFoundException(`Mission with ID ${id} not found`);
     }
     return mission;
@@ -83,93 +70,73 @@ export class MissionService {
     await this.missionRepository.update(id, updateMissionDto);
     const updatedMission = await this.findOne(id);
 
-    // Envoyer une notification WebSocket
-    const notification: MissionNotificationDto = {
+    this.sendNotification({
       missionId: updatedMission.id,
       eventType: MissionEventType.UPDATED,
       agentId: updatedMission.agentId || 'all',
-      message: `Mission ${updatedMission.title || updatedMission.codeName || updatedMission.id} a été modifiée`,
+      message: `Mission ${this.getMissionName(updatedMission)} a été modifiée`,
       timestamp: new Date(),
-    };
+    });
 
-    if (updatedMission.agentId) {
-      this.chatGateway.sendMissionNotification(notification);
-    } else {
-      this.chatGateway.broadcastMissionNotification(notification);
-    }
-
-    this.logger.log(`Mission ${id} updated and notification sent`);
     return updatedMission;
   }
 
-  async remove(id: string, agentId?: string) {
+  async remove(id: string) {
     const mission = await this.findOne(id);
     await this.missionRepository.delete(id);
 
-    // Envoyer une notification WebSocket
-    const notification: MissionNotificationDto = {
+    this.sendNotification({
       missionId: mission.id,
       eventType: MissionEventType.DELETED,
-      agentId: agentId || mission.agentId || 'all',
-      message: `Mission ${mission.title || mission.codeName || mission.id} a été supprimée`,
+      agentId: mission.agentId || 'all',
+      message: `Mission ${this.getMissionName(mission)} a été supprimée`,
       timestamp: new Date(),
-    };
+    });
 
-    if (notification.agentId && notification.agentId !== 'all') {
-      this.chatGateway.sendMissionNotification(notification);
-    } else {
-      this.chatGateway.broadcastMissionNotification(notification);
-    }
-
-    this.logger.log(`Mission ${id} deleted and notification sent`);
     return { deleted: true };
   }
 
-  async cancel(id: string, agentId?: string) {
+  async cancel(id: string) {
     const mission = await this.findOne(id);
-    // Mettre à jour le statut
     await this.missionRepository.update(id, { status: 'CANCELLED' });
 
-    // Envoyer une notification WebSocket
-    const notification: MissionNotificationDto = {
+    this.sendNotification({
       missionId: mission.id,
       eventType: MissionEventType.CANCELLED,
-      agentId: agentId || mission.agentId || 'all',
-      message: `Mission ${mission.title || mission.codeName || mission.id} a été annulée`,
+      agentId: mission.agentId || 'all',
+      message: `Mission ${this.getMissionName(mission)} a été annulée`,
       timestamp: new Date(),
-    };
+    });
 
-    if (notification.agentId && notification.agentId !== 'all') {
-      this.chatGateway.sendMissionNotification(notification);
-    } else {
-      this.chatGateway.broadcastMissionNotification(notification);
-    }
-
-    this.logger.log(`Mission ${id} cancelled and notification sent`);
     return this.findOne(id);
   }
 
-  async complete(id: string, agentId?: string) {
+  async complete(id: string) {
     const mission = await this.findOne(id);
-    // Mettre à jour le statut
     await this.missionRepository.update(id, { status: 'COMPLETED' });
 
-    // Envoyer une notification WebSocket
-    const notification: MissionNotificationDto = {
+    this.sendNotification({
       missionId: mission.id,
       eventType: MissionEventType.COMPLETED,
-      agentId: agentId || mission.agentId || 'all',
-      message: `Mission ${mission.title || mission.codeName || mission.id} a été terminée`,
+      agentId: mission.agentId || 'all',
+      message: `Mission ${this.getMissionName(mission)} a été terminée`,
       timestamp: new Date(),
-    };
+    });
 
+    return this.findOne(id);
+  }
+
+  /** Retourne le nom d'affichage de la mission */
+  private getMissionName(mission: Mission): string {
+    return mission.title || mission.codeName || mission.id;
+  }
+
+  /** Envoie une notification via WebSocket */
+  private sendNotification(notification: MissionNotificationDto): void {
     if (notification.agentId && notification.agentId !== 'all') {
       this.chatGateway.sendMissionNotification(notification);
     } else {
       this.chatGateway.broadcastMissionNotification(notification);
     }
-
-    this.logger.log(`Mission ${id} completed and notification sent`);
-    return this.findOne(id);
   }
 }
