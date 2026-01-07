@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Step } from '../entities/step.entity'; // ← Import Step
+import { Step } from '../entities/step.entity';
 import { StepsController } from './steps.controller';
 import { StepsService } from './steps.service';
+import { ChatModule } from '../chat/chat.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Step]), // ← AJOUTER CETTE LIGNE
-  ],
+  imports: [TypeOrmModule.forFeature([Step]), ChatModule],
   controllers: [StepsController],
   providers: [StepsService],
   exports: [StepsService],

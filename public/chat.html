@@ -53,6 +53,23 @@
             background: #f8d7da;
             color: #721c24;
         }
+        .notification {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 4px solid;
+        }
+        .notification.created { background: #d4edda; border-color: #28a745; }
+        .notification.updated { background: #fff3cd; border-color: #ffc107; }
+        .notification.deleted { background: #f8d7da; border-color: #dc3545; }
+        .notification.cancelled { background: #f8d7da; border-color: #dc3545; }
+        .notification.completed { background: #cce5ff; border-color: #007bff; }
+        .notification.step_added { background: #d1ecf1; border-color: #17a2b8; }
+        .notification.step_updated { background: #fff3cd; border-color: #ffc107; }
+        .notification.step_deleted { background: #f8d7da; border-color: #dc3545; }
+        .notification.report_added { background: #e2d5f1; border-color: #6f42c1; }
+        .notification.report_updated { background: #fff3cd; border-color: #ffc107; }
+        .notification.report_deleted { background: #f8d7da; border-color: #dc3545; }
     </style>
 </head>
 <body>
@@ -122,7 +139,7 @@
             });
 
             socket.on('mission-notification', (data) => {
-                addMessage('Notification', `Mission ${data.eventType}: ${data.message}`, 'system');
+                addNotification(data);
             });
         }
 
@@ -174,6 +191,33 @@
             messageDiv.innerHTML = `<strong>[${time}] ${sender}:</strong> ${message}`;
 
             messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function addNotification(data) {
+            const messagesDiv = document.getElementById('messages');
+            const notifDiv = document.createElement('div');
+            notifDiv.className = `notification ${data.eventType}`;
+
+            const icons = {
+                created: '[+]',
+                updated: '[~]',
+                deleted: '[X]',
+                cancelled: '[!]',
+                completed: '[OK]',
+                step_added: '[+S]',
+                step_updated: '[~S]',
+                step_deleted: '[XS]',
+                report_added: '[+R]',
+                report_updated: '[~R]',
+                report_deleted: '[XR]'
+            };
+
+            const time = new Date().toLocaleTimeString();
+            const icon = icons[data.eventType] || '[?]';
+            notifDiv.innerHTML = `<strong>[${time}] ${icon}</strong> ${data.message}`;
+
+            messagesDiv.appendChild(notifDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
