@@ -67,7 +67,10 @@ export class MissionService {
   }
 
   async update(id: string, updateMissionDto: UpdateMissionDto) {
-    await this.missionRepository.update(id, updateMissionDto);
+    // Exclure les champs relationnels qui ne peuvent pas être mis à jour via update()
+    const { steps, reports, ...updateData } = updateMissionDto as any;
+
+    await this.missionRepository.update(id, updateData);
     const updatedMission = await this.findOne(id);
 
     this.sendNotification({
@@ -131,12 +134,8 @@ export class MissionService {
     return mission.title || mission.codeName || mission.id;
   }
 
-  /** Envoie une notification via WebSocket */
+  /** Envoie une notification via WebSocket à tous les clients */
   private sendNotification(notification: MissionNotificationDto): void {
-    if (notification.agentId && notification.agentId !== 'all') {
-      this.chatGateway.sendMissionNotification(notification);
-    } else {
-      this.chatGateway.broadcastMissionNotification(notification);
-    }
+    this.chatGateway.broadcastMissionNotification(notification);
   }
 }
