@@ -10,5 +10,6 @@ import { StepsService } from './steps.service';
   ],
   controllers: [StepsController],
   providers: [StepsService],
+  exports: [StepsService],
 })
 export class StepsModule {}

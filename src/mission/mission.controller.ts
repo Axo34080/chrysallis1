@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   Delete,
+  Patch,
 } from '@nestjs/common';
 import { MissionService } from './mission.service';
 import { StepsService } from '../steps/steps.service';
@@ -48,7 +49,7 @@ export class MissionController {
   @Post()
   create(@Body() createMissionDto: CreateMissionDto) {
     console.log('Creating mission with data:', createMissionDto);
-    //return this.missionService.create(createMissionDto);
+    return this.missionService.create(createMissionDto);
   }
 
   /**
@@ -57,7 +58,7 @@ export class MissionController {
    */
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.missionService.findOne(+id);
+    return this.missionService.findOne(id);
   }
 
   /**
@@ -66,7 +67,34 @@ export class MissionController {
    */
   @Put(':id')
   update(@Param('id') id: string, @Body() updateMissionDto: UpdateMissionDto) {
-    return this.missionService.update(+id, updateMissionDto);
+    return this.missionService.update(id, updateMissionDto);
+  }
+
+  /**
+   * DELETE /missions/:id
+   * Supprime une mission
+   */
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.missionService.remove(id);
+  }
+
+  /**
+   * PATCH /missions/:id/cancel
+   * Annule une mission
+   */
+  @Patch(':id/cancel')
+  cancel(@Param('id') id: string) {
+    return this.missionService.cancel(id);
+  }
+
+  /**
+   * PATCH /missions/:id/complete
+   * Marque une mission comme terminée
+   */
+  @Patch(':id/complete')
+  complete(@Param('id') id: string) {
+    return this.missionService.complete(id);
   }
 
   // ====== STEPS (Étapes de mission) ======
@@ -90,7 +118,7 @@ export class MissionController {
     @Body() createStepDto: CreateStepDto,
   ) {
     // Récupère d'abord la mission pour l'associer à l'étape
-    const mission = await this.missionService.findOne(+id);
+    const mission = await this.missionService.findOne(id);
     const stepWithMission = Object.assign({}, createStepDto, { mission });
     return this.stepsService.create(stepWithMission);
   }
@@ -137,7 +165,7 @@ export class MissionController {
     @Body() createReportDto: CreateFieldReportDto,
   ) {
     // Récupère d'abord la mission pour l'associer au rapport
-    const mission = await this.missionService.findOne(+id);
+    const mission = await this.missionService.findOne(id);
     const reportWithMission = Object.assign({}, createReportDto, { mission });
     return this.fieldReportsService.create(reportWithMission);
   }

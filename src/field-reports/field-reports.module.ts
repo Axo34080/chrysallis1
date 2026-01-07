@@ -5,10 +5,9 @@ import { FieldReportsController } from './field-reports.controller';
 import { FieldReportsService } from './field-reports.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([FieldReport]), // ← AJOUTER CETTE LIGNE
-  ],
+  imports: [TypeOrmModule.forFeature([FieldReport])],
   controllers: [FieldReportsController],
   providers: [FieldReportsService],
+  exports: [FieldReportsService],
 })
 export class FieldReportsModule {}

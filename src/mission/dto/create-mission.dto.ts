@@ -8,4 +8,6 @@ export class CreateMissionDto {
   status?: string;
   classificationLevel?: string;
   encryptedData?: string;
+  title: string;
+  agentId?: string;
 }

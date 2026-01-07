@@ -13,6 +13,7 @@ import { FieldReportsModule } from './field-reports/field-reports.module';
 import { HealthModule } from './health/health.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -25,13 +26,14 @@ import { TasksModule } from './tasks/tasks.module';
       password: process.env.DATABASE_PASSWORD || 'changeme',
       database: process.env.DATABASE_NAME || 'chrysallis_db',
       entities: [User, Post, Mission, Step, FieldReport],
-      synchronize: process.env.NODE_ENV !== 'production', // only in development
+      synchronize: true, // Changez temporairement en true
     }),
     MissionModule,
     StepsModule,
     FieldReportsModule,
     HealthModule,
     TasksModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

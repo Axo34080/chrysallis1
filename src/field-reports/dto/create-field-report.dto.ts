@@ -1,5 +1,6 @@
 export class CreateFieldReportDto {
-  encryptedContent: string;
+  details: string;
+  authorAgent?: string;
   location?: string;
   latitude?: number;
   longitude?: number;

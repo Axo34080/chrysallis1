@@ -18,9 +18,13 @@ export class FieldReport {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  // Contenu chiffré du rapport (pour la sécurité)
+  // Détails du rapport
   @Column('text')
-  encryptedContent: string;
+  details: string;
+
+  // Agent auteur du rapport
+  @Column({ length: 200, nullable: true })
+  authorAgent: string;
 
   // Lieu d'où le rapport a été envoyé
   @Column({ length: 200, nullable: true })

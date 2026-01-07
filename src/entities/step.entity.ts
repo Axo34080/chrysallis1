@@ -18,30 +18,29 @@ export class Step {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  // Titre de l'étape (ex: "Infiltration du bâtiment")
-  @Column({ length: 200 })
-  title: string;
-
-  // Description détaillée de l'étape
+  // Description de l'étape
   @Column('text', { nullable: true })
   description: string;
 
+  // Agent assigné à cette étape
+  @Column({ length: 200, nullable: true })
+  assignedAgent: string;
+
+  // Lieu de l'étape
+  @Column({ length: 200, nullable: true })
+  location: string;
+
+  // Date de début
+  @Column({ type: 'timestamp', nullable: true })
+  startDate: Date;
+
+  // Date de fin
+  @Column({ type: 'timestamp', nullable: true })
+  endDate: Date;
+
   // Statut de l'étape
-  // pending: en attente, in_progress: en cours, completed: terminée, failed: échouée
-  @Column({
-    type: 'enum',
-    enum: ['pending', 'in_progress', 'completed', 'failed'],
-    default: 'pending',
-  })
+  @Column({ length: 50, default: 'ASSIGNED' })
   status: string;
-
-  // Ordre d'exécution de l'étape (0, 1, 2, ...)
-  @Column({ type: 'int', default: 0 })
-  order: number;
-
-  // Instructions chiffrées pour cette étape
-  @Column('text', { nullable: true })
-  encryptedInstructions: string;
 
   // Mission à laquelle appartient cette étape (relation ManyToOne)
   // Suppression en cascade : si la mission est supprimée, l'étape l'est aussi

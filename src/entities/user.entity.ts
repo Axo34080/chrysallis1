@@ -12,6 +12,12 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Column()
+  password: string;
+
+  @Column({ default: 'agent' })
+  role: string;
+
   @OneToMany(() => Post, (post) => post.author)
   posts: Post[];
 }

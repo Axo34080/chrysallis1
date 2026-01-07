@@ -1,18 +1,21 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Mission } from '../entities/mission.entity';
-import { Step } from '../entities/step.entity';
-import { FieldReport } from '../entities/field-report.entity';
-import { MissionController } from './mission.controller';
 import { MissionService } from './mission.service';
-import { StepsService } from '../steps/steps.service';
-import { FieldReportsService } from '../field-reports/field-reports.service';
+import { MissionController } from './mission.controller';
+import { Mission } from '../entities/mission.entity';
+import { StepsModule } from '../steps/steps.module';
+import { FieldReportsModule } from '../field-reports/field-reports.module';
+import { ChatModule } from '../chat/chat.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Mission, Step, FieldReport]), // ← Importer les 3 entités
+    TypeOrmModule.forFeature([Mission]),
+    StepsModule,
+    FieldReportsModule,
+    ChatModule,
   ],
   controllers: [MissionController],
-  providers: [MissionService, StepsService, FieldReportsService], // ← Les 3 services
+  providers: [MissionService],
+  exports: [MissionService],
 })
 export class MissionModule {}

@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   Column,
   OneToMany,
   CreateDateColumn,
@@ -16,7 +16,7 @@ import { FieldReport } from './field-report.entity';
 @Entity('missions')
 export class Mission {
   // Identifiant unique (compatible avec les IDs personnalisés du front-end)
-  @PrimaryColumn({ length: 100 })
+  @PrimaryGeneratedColumn({})
   id: string;
 
   // Nom de code de la mission (ex: "Opération Phénix")
@@ -43,7 +43,7 @@ export class Mission {
   // ASSIGNED: assignée, IN_PROGRESS: en cours, COMPLETED: terminée, COMPROMISED: compromise
   @Column({
     type: 'enum',
-    enum: ['ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'COMPROMISED'],
+    enum: ['ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'COMPROMISED', 'CANCELLED'],
     default: 'ASSIGNED',
   })
   status: string;
@@ -60,6 +60,14 @@ export class Mission {
   // Données chiffrées supplémentaires de la mission
   @Column('text', { nullable: true })
   encryptedData: string;
+
+  // ID de l'agent assigné à la mission
+  @Column({ length: 100, nullable: true })
+  agentId: string;
+
+  // Titre de la mission (pour les notifications)
+  @Column({ length: 200, nullable: true })
+  title: string;
 
   // Liste des étapes de la mission (relation OneToMany)
   // Suppression en cascade : si la mission est supprimée, toutes ses étapes le sont aussi

@@ -1,7 +1,8 @@
 export class CreateStepDto {
-  title: string;
   description?: string;
+  assignedAgent?: string;
+  location?: string;
+  startDate?: Date;
+  endDate?: Date;
   status?: string;
-  order?: number;
-  encryptedInstructions?: string;
 }
