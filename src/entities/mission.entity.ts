@@ -15,7 +15,7 @@ import { FieldReport } from './field-report.entity';
  */
 @Entity('missions')
 export class Mission {
-  // Identifiant unique (compatible avec les IDs personnalisés du front-end)
+  // Genere un id
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

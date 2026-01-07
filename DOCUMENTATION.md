@@ -224,8 +224,6 @@ Mission (1) ──── (N) FieldReport
 | GET | `/steps/:id` | Récupère une étape |
 | PUT | `/steps/:id` | Met à jour une étape |
 | DELETE | `/steps/:id` | Supprime une étape |
-| GET | `/steps/health/live` | Liveness check |
-| GET | `/steps/health/ready` | Readiness check |
 
 ---
 
@@ -310,12 +308,14 @@ Broadcast des messages de chat.
 ```
 
 #### `mission-notification`
-Notifications de missions.
+Notifications de missions, steps et rapports.
 
 ```typescript
 {
   missionId: string,
-  eventType: 'created' | 'updated' | 'deleted' | 'cancelled' | 'completed',
+  eventType: 'created' | 'updated' | 'deleted' | 'cancelled' | 'completed' |
+             'step_added' | 'step_updated' | 'step_deleted' |
+             'report_added' | 'report_updated' | 'report_deleted',
   agentId: string,
   message: string,
   timestamp: Date

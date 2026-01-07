@@ -25,29 +25,27 @@ export class MissionService {
   ) {}
 
   async create(createMissionDto: CreateMissionDto) {
-    // Générer un ID si non fourni
-    if (!createMissionDto.id) {
-      createMissionDto.id = `mission-${Date.now()}`;
-    }
-
-    this.logger.debug('Creating mission with data:', createMissionDto);
-
     const mission = this.missionRepository.create(createMissionDto);
-    this.logger.debug('Mission entity created:', mission);
-
     const savedMission = await this.missionRepository.save(mission);
 
     // Envoyer une notification WebSocket
     const notification: MissionNotificationDto = {
-      missionId: savedMission.id,
+      missionId: savedMission.id, // Utiliser l'ID généré par PostgreSQL
       eventType: MissionEventType.CREATED,
       agentId: savedMission.agentId || 'all',
       message: `Nouvelle mission créée: ${savedMission.title || savedMission.codeName || savedMission.id}`,
       timestamp: new Date(),
     };
 
-    this.sendNotification(notification);
-    this.logger.log(`Mission ${savedMission.id} created`);
+    console.log('[MissionService] Envoi notification CREATE:', notification);
+
+    if (savedMission.agentId) {
+      this.chatGateway.sendMissionNotification(notification);
+    } else {
+      this.chatGateway.broadcastMissionNotification(notification);
+    }
+
+    this.logger.log(`Mission ${savedMission.id} created and notification sent`);
     return savedMission;
   }
 

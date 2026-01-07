@@ -1,5 +1,4 @@
 export class CreateMissionDto {
-  id: string;
   codeName?: string;
   description?: string;
   location?: string;
