@@ -68,9 +68,14 @@ export class MissionService {
 
   async update(id: string, updateMissionDto: UpdateMissionDto) {
     // Exclure les champs relationnels qui ne peuvent pas être mis à jour via update()
-    const { steps, reports, ...updateData } = updateMissionDto as any;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { steps, reports, ...updateData } =
+      updateMissionDto as UpdateMissionDto & {
+        steps?: unknown;
+        reports?: unknown;
+      };
 
-    await this.missionRepository.update(id, updateData);
+    await this.missionRepository.update(id, updateData as Partial<Mission>);
     const updatedMission = await this.findOne(id);
 
     this.sendNotification({
